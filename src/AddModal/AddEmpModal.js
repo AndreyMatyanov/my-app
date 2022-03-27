@@ -3,27 +3,16 @@ import axios from 'axios';
 import {Modal, Button, Row, Col, Form, Image} from 'react-bootstrap'
 
 
-export const EditEmpModal = (props) =>{
-    const [employeeName, setEmployeeName] = useState('');
-    const [department, setDepartment] = useState('');
-    const [dateOfJoining, setDateOfJoining] = useState('');
-    const [photoFileName, setPhotoFileName] = useState('');
+export const AddEmpModal = (props) =>{
+    const employeeNameField = useRef();
+    const [photoFileName, setPhotoFileName] = useState('anonymous.png');
     const [imagescr, setImagescr] = useState(process.env.REACT_APP_PHOTOPATH+photoFileName);
 
-    const [deps,setDeps] = useState([]);
+    const [deps,setDeps] = useState([])
 
     useEffect(()=>{
-        handleDepSubmit();  
-        setEmployeeName(props.employeeName);
-        setDepartment(props.department);
-        setDateOfJoining(props.dateOfJoining);
-        setPhotoFileName(props.photoFileName);
-        setImagescr(process.env.REACT_APP_PHOTOPATH+props.photoFileName);
-    },[props.employeeName, props.department, props.dateOfJoining, props.photoFileName])
-
-    const handleChangeEmployeeNameControlled = (event) =>{
-        setEmployeeName(event.target.value);
-    }
+        handleDepSubmit();
+    })
 
     async function handleDepSubmit(){
         const res = await axios.get(process.env.REACT_APP_API+'department');
@@ -31,15 +20,17 @@ export const EditEmpModal = (props) =>{
     }
 
     async function handleSubmit(event){
-        const res = await axios.put(`${process.env.REACT_APP_API}employee/`, {
-            employeeId: props.employeeId,
-            EmployeeName: employeeName,
+        event.preventDefault();
+        const res = await axios.post(process.env.REACT_APP_API+'employee', {
+            EmployeeName: employeeNameField.current.value,
             Department: event.target.Department.value,
-            DateOfJoinging: event.target.DateOfJoining.value,
+            DateOfJoining: event.target.DateOfJoining.value,
             PhotoFileName: photoFileName
         });
         await props.getEmployee();
-        props.setIsEditOpen(false);
+        setPhotoFileName('anonymous.png');
+        setImagescr(process.env.REACT_APP_PHOTOPATH+photoFileName);
+        props.setIsOpen(false);
     }
 
 
@@ -67,7 +58,7 @@ export const EditEmpModal = (props) =>{
                 >
                     <Modal.Header closeButton>
                         <Modal.Title id="contained-modal-title-vcenter">
-                            Add Employee
+                            Add Department
                         </Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
@@ -76,13 +67,7 @@ export const EditEmpModal = (props) =>{
                                 <Form onSubmit={handleSubmit}>
                                     <Form.Group controlId="EmployeeName">
                                         <Form.Label>Employee Name</Form.Label>
-                                        <Form.Control 
-                                        type="text" 
-                                        name="EmployeeName" 
-                                        required 
-                                        placeholder="EmployeeName" 
-                                        value={employeeName} 
-                                        onChange={handleChangeEmployeeNameControlled}/>
+                                        <Form.Control type="text" name="EmployeeName" required placeholder="EmployeeName" ref={employeeNameField}/>
                                     </Form.Group>
 
                                     <Form.Group controlId="Department">
@@ -98,13 +83,12 @@ export const EditEmpModal = (props) =>{
                                         type="date" 
                                         name = "DateOfJoining"
                                         required
-                                        placeholder="DateOfJoining"
-                                        value = {dateOfJoining}>
+                                        placeholder="DateOfJoining">
                                         </Form.Control>
                                     </Form.Group>
                                     <Form.Group>
                                         <Button variant="primary" type="submit">
-                                                Edit Department
+                                                Add Department
                                         </Button>
                                     </Form.Group>
                                 </Form>
@@ -124,7 +108,7 @@ export const EditEmpModal = (props) =>{
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="danger" onClick={()=>
-                            props.setIsEditOpen(false)}>Close</Button>
+                            props.setIsOpen(false)}>Close</Button>
                     </Modal.Footer>
                 </Modal>
             </div>

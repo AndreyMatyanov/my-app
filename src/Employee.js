@@ -2,8 +2,8 @@ import axios from 'axios';
 import React,{useEffect, useState} from 'react'
 import {Table} from 'react-bootstrap'
 import {Button, ButtonToolbar} from 'react-bootstrap'
-import { AddEmpModal } from './AddEmpModal';
-import { EditEmpModal } from './EditEmpModal';
+import { AddEmpModal } from './AddModal/AddEmpModal';
+import { EditEmpModal } from './EditModal/EditEmpModal';
 
 export const Employee = () => {
     const [emps,setEmps] = useState([])
@@ -63,7 +63,7 @@ export const Employee = () => {
                             <td>{emp.Department}</td>
                             <td>{emp.DateOfJoining}</td>
                             <td><Button
-                            onClick ={() => {handleEmployeeEdit(emp)}}>Edit</Button> 
+                            onClick ={() => handleEmployeeEdit(emp)}>Edit</Button> 
                             |
                             <Button className= "mr-2" variant = "danger" onClick ={()=>{deleteEmp(emp.EmployeeId)}}>Delete</Button>
                             </td>

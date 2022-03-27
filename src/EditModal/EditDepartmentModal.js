@@ -15,7 +15,20 @@ export const EditDepModal = (props) =>{
     }
 
     async function handleSubmit(){
-        const res = await axios.put(`${process.env.REACT_APP_API}department/`, {departmentId: props.departmentId, departmentName: depName});
+        await axios.put(`${process.env.REACT_APP_API}department/`, {departmentId: props.departmentId, departmentName: depName});
+        const empRes = await axios.get(process.env.REACT_APP_API+'employee');
+        await empRes.data.map(emp =>{
+            if(emp.Department === props.departmentName){
+                console.log(emp.DateOfJoining);
+                axios.put(`${process.env.REACT_APP_API}employee/`, {
+                    employeeId: emp.EmployeeId,
+                    EmployeeName: emp.EmployeeName,
+                    Department: depName,
+                    DateOfJoinging: emp.DateOfJoining,
+                    PhotoFileName: emp.PhotoFileName
+                });
+            }
+        })
         await props.getDepartment();
         props.setIsEditOpen(false);
     }
@@ -39,7 +52,7 @@ export const EditDepModal = (props) =>{
                                 <Form>
                                     <Form.Group controlId="DepartmentName">
                                         <Form.Label>Department Name</Form.Label>
-                                        <Form.Control type="text" name="DepartmentName" required placeholder="DepartmentName" value={depName} onChange={handleChangeControlled}/>
+                                        <Form.Control type="text" name="DepartmentName" required placeholder="DepartmentName" value={depName} onChange={() => handleChangeControlled()}/>
                                     </Form.Group>
 
                                     <Form.Group>

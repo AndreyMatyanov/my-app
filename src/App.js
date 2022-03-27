@@ -14,9 +14,9 @@ function App() {
 
     <Navigation/>
     <Routes>
-      <Route path='/' element={<Home/>} exact/>
-      <Route path='/department' element={<Department/>} exact/>
-      <Route path='/employee' element={<Employee/>} exact/>
+      <Route path='/department' element={<Department/>}/>
+      <Route path='/employee' element={<Employee/>}/>
+      <Route path='/' element={<Home/>}/>
     </Routes>
     
     </div>

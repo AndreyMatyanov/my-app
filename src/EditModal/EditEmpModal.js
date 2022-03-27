@@ -1,18 +1,31 @@
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import axios from 'axios';
 import {Modal, Button, Row, Col, Form, Image} from 'react-bootstrap'
 
 
-export const AddEmpModal = (props) =>{
-    const employeeNameField = useRef();
-    const [photoFileName, setPhotoFileName] = useState('anonymous.png');
+export const EditEmpModal = (props) =>{
+    const [employeeName, setEmployeeName] = useState('');
+    const [dateOfJoining, setDateOfJoining] = useState('');
+    const [photoFileName, setPhotoFileName] = useState('');
     const [imagescr, setImagescr] = useState(process.env.REACT_APP_PHOTOPATH+photoFileName);
 
-    const [deps,setDeps] = useState([])
+    const [deps,setDeps] = useState([]);
 
     useEffect(()=>{
-        handleDepSubmit();
-    })
+        handleDepSubmit();  
+        setEmployeeName(props.employeeName);
+        setDateOfJoining(props.dateOfJoining);
+        setPhotoFileName(props.photoFileName);
+        setImagescr(process.env.REACT_APP_PHOTOPATH+props.photoFileName);
+    },[props.employeeName, props.department, props.dateOfJoining, props.photoFileName])
+
+    const handleChangeEmployeeNameControlled = (event) =>{
+        setEmployeeName(event.target.value);
+    }
+
+    const handleChangeDateOfJoiningControlled= (event) =>{
+        setDateOfJoining(event.target.value);
+    }
 
     async function handleDepSubmit(){
         const res = await axios.get(process.env.REACT_APP_API+'department');
@@ -20,17 +33,15 @@ export const AddEmpModal = (props) =>{
     }
 
     async function handleSubmit(event){
-        event.preventDefault();
-        const res = await axios.post(process.env.REACT_APP_API+'employee', {
-            EmployeeName: employeeNameField.current.value,
+        await axios.put(`${process.env.REACT_APP_API}employee/`, {
+            employeeId: props.employeeId,
+            EmployeeName: employeeName,
             Department: event.target.Department.value,
-            DateOfJoinging: event.target.DateOfJoining.value,
+            DateOfJoining: event.target.DateOfJoining.value,
             PhotoFileName: photoFileName
         });
         await props.getEmployee();
-        setPhotoFileName('anonymous.png');
-        setImagescr(process.env.REACT_APP_PHOTOPATH+photoFileName);
-        props.setIsOpen(false);
+        props.setIsEditOpen(false);
     }
 
 
@@ -42,7 +53,7 @@ export const AddEmpModal = (props) =>{
             event.target.files[0],
             event.target.files[0].name
         );
-        const res = axios.post(process.env.REACT_APP_API+ 'Employee/SaveFile', formData);
+        axios.post(process.env.REACT_APP_API+ 'Employee/SaveFile', formData);
         setPhotoFileName(event.target.files[0].name);
         setImagescr(process.env.REACT_APP_PHOTOPATH+event.target.files[0].name);
 
@@ -58,7 +69,7 @@ export const AddEmpModal = (props) =>{
                 >
                     <Modal.Header closeButton>
                         <Modal.Title id="contained-modal-title-vcenter">
-                            Add Department
+                            Add Employee
                         </Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
@@ -67,7 +78,13 @@ export const AddEmpModal = (props) =>{
                                 <Form onSubmit={handleSubmit}>
                                     <Form.Group controlId="EmployeeName">
                                         <Form.Label>Employee Name</Form.Label>
-                                        <Form.Control type="text" name="EmployeeName" required placeholder="EmployeeName" ref={employeeNameField}/>
+                                        <Form.Control 
+                                        type="text" 
+                                        name="EmployeeName" 
+                                        required 
+                                        placeholder="EmployeeName" 
+                                        value={employeeName} 
+                                        onChange={handleChangeEmployeeNameControlled}/>
                                     </Form.Group>
 
                                     <Form.Group controlId="Department">
@@ -83,12 +100,14 @@ export const AddEmpModal = (props) =>{
                                         type="date" 
                                         name = "DateOfJoining"
                                         required
-                                        placeholder="DateOfJoining">
+                                        placeholder="DateOfJoining"
+                                        value = {dateOfJoining}
+                                        onChange={()=> handleChangeDateOfJoiningControlled()}>
                                         </Form.Control>
                                     </Form.Group>
                                     <Form.Group>
                                         <Button variant="primary" type="submit">
-                                                Add Department
+                                                Edit Department
                                         </Button>
                                     </Form.Group>
                                 </Form>
@@ -101,14 +120,14 @@ export const AddEmpModal = (props) =>{
                                     accept="image/png"
                                     id="contained-button-content"
                                     name="customFile"
-                                    onChange={handleFileSelect}/>
+                                    onChange={() => handleFileSelect()}/>
                                 </Form>
                             </Col>
                         </Row>
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="danger" onClick={()=>
-                            props.setIsOpen(false)}>Close</Button>
+                            props.setIsEditOpen(false)}>Close</Button>
                     </Modal.Footer>
                 </Modal>
             </div>
