@@ -12,7 +12,6 @@ export const EditDepModal = (props) =>{
     
     const handleChangeControlled = (event) =>{
         setDepartmentName(event.target.value);
-
     }
 
     async function handleSubmit(){
@@ -38,7 +37,7 @@ export const EditDepModal = (props) =>{
                         <Row>
                             <Col sm={6}>
                                 <Form>
-                                    <Form.Group controllId="DepartmentName">
+                                    <Form.Group controlId="DepartmentName">
                                         <Form.Label>Department Name</Form.Label>
                                         <Form.Control type="text" name="DepartmentName" required placeholder="DepartmentName" value={depName} onChange={handleChangeControlled}/>
                                     </Form.Group>

@@ -3,6 +3,7 @@ import React,{useEffect, useState} from 'react'
 import {Table} from 'react-bootstrap'
 import {Button, ButtonToolbar} from 'react-bootstrap'
 import { AddEmpModal } from './AddEmpModal';
+import { EditEmpModal } from './EditEmpModal';
 
 export const Employee = () => {
     const [emps,setEmps] = useState([])
@@ -11,7 +12,13 @@ export const Employee = () => {
         getEpmloyee();
     },[])
 
-    const[isOpen, setIsOpen] = useState(false)
+    const[isOpen, setIsOpen] = useState(false);
+    const[isEditOpen, setIsEditOpen] = useState(false);
+    const[targetEmployeeId, setTargetEmployeeId] = useState();
+    const[targetEmployeeName, setTargetEmployeeName] = useState();
+    const[targetDepartment, setTargetDepartment] = useState();
+    const[targetDateOfJoining, setTargetDateOfJoining] = useState();
+    const[targetPhotoFileName, setTargetPhotoFileName] = useState();
 
     async function deleteEmp(empId){
         if(window.confirm('Are you sure about that?')){
@@ -24,6 +31,15 @@ export const Employee = () => {
     async function getEpmloyee() {
         const res = await axios.get(process.env.REACT_APP_API+'employee');
         setEmps(res.data);
+    }
+
+    const handleEmployeeEdit = (emp) => {
+        setIsEditOpen(true);
+        setTargetEmployeeId(emp.EmployeeId);
+        setTargetEmployeeName(emp.EmployeeName);
+        setTargetDepartment(emp.Department);
+        setTargetDateOfJoining(emp.DateOfJoining);
+        setTargetPhotoFileName(emp.PhotoFileName);
     }
 
 
@@ -46,8 +62,10 @@ export const Employee = () => {
                             <td>{emp.EmployeeName}</td>
                             <td>{emp.Department}</td>
                             <td>{emp.DateOfJoining}</td>
-                            <td>Edit |
-                                <Button className= "mr-2" variant = "danger" onClick ={()=>{deleteEmp(emp.EmployeeId)}}>Delete</Button>
+                            <td><Button
+                            onClick ={() => {handleEmployeeEdit(emp)}}>Edit</Button> 
+                            |
+                            <Button className= "mr-2" variant = "danger" onClick ={()=>{deleteEmp(emp.EmployeeId)}}>Delete</Button>
                             </td>
                         </tr>
                     )}
@@ -60,6 +78,15 @@ export const Employee = () => {
                 </Button>
             </ButtonToolbar>
             <AddEmpModal show={isOpen} setIsOpen={setIsOpen} getEmployee={getEpmloyee}/>
+            <EditEmpModal 
+            show={isEditOpen} 
+            setIsEditOpen={setIsEditOpen} 
+            getEpmloyee={getEpmloyee} 
+            employeeId = {targetEmployeeId} 
+            employeeName = {targetEmployeeName}
+            department = {targetDepartment}
+            dateOfJoining = {targetDateOfJoining}
+            photoFileName = {targetPhotoFileName}/>
         </div>
     )
 }
